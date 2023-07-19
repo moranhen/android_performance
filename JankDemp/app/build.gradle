@@ -1,0 +1,66 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.bytedance.rhea-trace'
+}
+
+android {
+    namespace 'com.example.jankdemp'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.example.jankdemp"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+rheaTrace {
+    compilation {
+        //为减少 APK 体积, 你可以为 App 中需要跟踪的方法设置 id 以此来跟踪此自定义事件, 默认值 false。
+        traceWithMethodID = false
+        //该文件配置决定哪些方法您不希望跟踪, 默认值 null。
+        traceFilterFilePath = "${project.rootDir}/rhea-trace/commonTraceFilter.txt"
+        //用特指定方法 id 来设置自定义事件名称, 默认值 null。
+//        applyMethodMappingFilePath = "${project.rootDir}/rhea-trace/keep-method-id.txt"
+    }
+
+    runtime {
+        //仅在主线程抓取跟踪事件, 默认值 false。
+        mainThreadOnly true
+        //在 App 启动之初开始抓取跟踪事件, 默认值 true。
+        startWhenAppLaunch true
+        //指定内存存储 atrace 数据 ring buffer 的大小。
+        atraceBufferSize "500000"
+    }
+}
+dependencies {
+    implementation "com.bytedance.btrace:rhea-core:2.0.0"
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation project(':jank-optimize')
+    implementation project(':anr-monitor')
+    implementation project(':launch-optimize')
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}

@@ -1,0 +1,7 @@
+[package]
+# which packages you want to trace.
+-allowpackage com/example/jankdemp
+-allowpackage androidx/
+
+# which packages you don't want to trace.
+-blockpackage com/example/jankdemp/test
