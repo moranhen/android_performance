@@ -6,12 +6,34 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileReader
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 
 object LaunchOptimize {
     fun delayGC() {
 //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             NativeLib().delayGC()
 //        }
+    }
+    fun delayGCNew() {
+        println("GC before cm ${Build.VERSION.SDK_INT} ,:: ${Build.MANUFACTURER}")
+        NativeLib().delayGCNew(Build.VERSION.SDK_INT, Build.MANUFACTURER)
+    }
+    fun requestGC() {
+        val ret = NativeLib().requestGC(Build.VERSION.SDK_INT, Build.MANUFACTURER)
+        if (ret == 0) {
+            try {
+                val systemClass = System::class.java
+                val gcMethod: Method = systemClass.getMethod("gc")
+                gcMethod.invoke(null)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+                Runtime.getRuntime().gc()
+            }
+        }
+    }
+    fun suppressGc(){
+        NativeLib().suppressGC()
     }
     fun bindCore() {
         val threadId = getRenderThreadTid()

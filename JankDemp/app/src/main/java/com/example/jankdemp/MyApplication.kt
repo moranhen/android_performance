@@ -12,6 +12,7 @@ class MyApplication : Application() {
         Log.i("startup_optimize", "application onCreate")
         JankMonitor.init(this)
         AnrTracer.init(this)
-        LaunchOptimize.delayGC()
+//        LaunchOptimize.delayGC()
+//        LaunchOptimize.delayGCNew();
     }
 }

@@ -15,11 +15,83 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
     <Button
+        android:id="@+id/crash_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CrashActivity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/jank_button"/>
+    <Button
+        android:id="@+id/thread_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ThreadActivity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/crash_button"/>
+    <Button
+        android:id="@+id/mem_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MemActivity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/thread_button"/>
+    <Button
         android:id="@+id/anr_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Anr"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/jank_button"/>
+        app:layout_constraintTop_toBottomOf="@id/mem_button"/>
+    <Button
+        android:id="@+id/gc_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GC"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/anr_button"/>
+    <Button
+        android:id="@+id/gc_new_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GCNew"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gc_button"/>
+    <Button
+        android:id="@+id/gc_request_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RequestGC"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gc_new_button"/>
+    <Button
+        android:id="@+id/gc_supress_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="suppressGc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gc_request_button"/>
+    <Button
+        android:id="@+id/malloc50_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="JAVA分配50MB内存"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gc_supress_button"/>
+    <Button
+        android:id="@+id/create_weak_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="创建一个弱引用"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/malloc50_button"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

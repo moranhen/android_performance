@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 3.4.1)
 
 project("launch_optimize")
 find_package(xdl REQUIRED CONFIG)
+find_package(shadowhook REQUIRED CONFIG)
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -23,6 +24,8 @@ add_library( # Sets the name of the library.
         # Provides a relative path to your source file(s).
         launch_optimize.cpp
         enhanced_dlfcn.c
+        art.cpp
+        art_new.cpp
         )
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -44,6 +47,8 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
         launch_optimize
         xdl::xdl
+        shadowhook::shadowhook
+
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})

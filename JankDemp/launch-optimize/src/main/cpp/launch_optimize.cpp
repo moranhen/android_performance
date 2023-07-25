@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include "xdl.h"
 #include "enhanced_dlfcn.h"
+#include "art.h"
+#include "art_new.h"
 #define LOG_TAG            "startup_optimize"
 #define LOG(fmt, ...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, fmt, ##__VA_ARGS__)
 #define XDL_DEFAULT           0x00
@@ -18,6 +20,7 @@ static void **mSlot = nullptr;
 static void *originFun = nullptr;
 static bool isGcSuppressStart = false;
 static int mGcTime = 2; // 默认抑制2s
+
 // 将虚函数表中的值替换成我们hook函数的地址
 bool replaceFunc(void **slot, void *func) {
     //将内存页面设置成为可写
@@ -38,14 +41,16 @@ bool replaceFunc(void **slot, void *func) {
 void hookRun(void *thread) {
     //休眠3秒
     LOG("gc hook Run");
-    sleep(5);
     //将虚函数表中的值还原成原函数，避免每次执行run函数时都会执行hook的方法
     replaceFunc(mSlot, originFun);
+    ((void (*)(void *)) originFun)(thread);
+
+//    sleep(5);
     LOG("execute origin fun before:: %p", originFun);
     //执行原来的Run方法
     LOG("execute origin fun after::%p", originFun);
     LOG("exec===::%p", mSlot);
-    ((void (*)(void *)) originFun)(thread);
+    LOG("gc thread addr: %p",thread);
 }
 void delayGC() {
     //以RTLD_NOW模式打开动态库libart.so，拿到句柄，RTLD_NOW即解析出每个未定义变量的地址
@@ -102,5 +107,47 @@ Java_com_example_launch_1optimize_NativeLib_delayGC(
     LOG("Open Startup Optimize");
     delayGC();
 }
+extern "C" JNIEXPORT int JNICALL
+Java_com_example_launch_1optimize_NativeLib_delayGCNew(
+        JNIEnv *env,
+        jobject /* this */,jint api_level,jstring manufacturer) {
+    LOG("GC begin");
+    LOG("GC before %d %s",api_level,manufacturer);
+    if (api_level < 26 || api_level > 33) {
+        LOG("suppressionGC only support android 8-13");
+        return -1;
+    }
+    return suppression_gc(env, api_level, reinterpret_cast<char *>(manufacturer));
+}
+
+extern "C" JNIEXPORT int JNICALL
+Java_com_example_launch_1optimize_NativeLib_requestGC(
+        JNIEnv *env,
+        jobject /* this */,jint api_level,jstring manufacturer) {
+    LOG("GC end");
+    if (api_level < 26 || api_level > 33) {
+        LOG("requestGC only support android 8-13");
+        return -1;
+    }
+    return request_gc(env);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_launch_1optimize_NativeLib_suppressGC(JNIEnv *env, jobject thiz) {
+    int androidApi = android_get_device_api_level();
+    if (androidApi < __ANDROID_API_M__) { // Android 5.x 版本
+        gcDelay5X();
+    } else if (androidApi < 34) { // Android 6 - 13
+        gcDelay();
+    } else {
+        LOG("android api > 33, return!");
+    }
 
 
+    if (androidApi < __ANDROID_API_N__ || androidApi >= 34) { // Android  < 7  > 13 先不管
+        LOG("android api > 33 || < 24, return!");
+    } else { // Android 7 - 13
+        jitDelay();
+    }
+}
